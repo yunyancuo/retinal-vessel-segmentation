@@ -1,0 +1,23 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 数据与产物（体积大、可再生）
+data/*
+!data/README.md
+outputs/
+runs/
+outputs_smoke/
+
+# 模型权重
+*.pth
+*.pt
+*.onnx
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
