@@ -69,7 +69,7 @@ def main():
     with open(log_csv, "w", encoding="utf-8") as f:
         f.write("epoch,train_loss,val_dice\n")
 
-    best = 0.0
+    best = -1.0  # 初始 -1 而非 0：未收敛时 val dice 可能为 0，也要能存下权重
     for epoch in range(1, args.epochs + 1):
         model.train()
         total = 0.0

@@ -25,9 +25,16 @@ def load_color(path):
 
 
 def pad16(t: torch.Tensor) -> torch.Tensor:
-    """向右/向下 pad 到 16 的倍数，保证 U-Net 四次下采样后尺寸能对齐。"""
+    """pad 成 16 倍数的正方形，保证 U-Net 四次下采样尺寸对齐。
+
+    取 max(H,W) 向上取整而非逐维 pad：随机 90° 旋转会交换 H/W，
+    逐维 pad 会导致同 batch 内出现 592x576 / 576x592 两种尺寸而无法 stack；
+    正方形目标在旋转前后一致。
+    """
     _, h, w = t.shape
-    return F.pad(t, (0, (16 - w % 16) % 16, 0, (16 - h % 16) % 16))
+    s = max(h, w)
+    s = s + (16 - s % 16) % 16
+    return F.pad(t, (0, s - w, 0, s - h))
 
 
 class DRIVEDataset(Dataset):

@@ -21,3 +21,6 @@ outputs_smoke/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# 远程运维脚本（含服务器凭据，勿提交）
+.remote/

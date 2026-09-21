@@ -30,7 +30,7 @@ def fractal_dimension(binary):
         counts.append(boxes.any(axis=(1, 3)).sum())
     logs = np.log(np.array(sizes, dtype=float))
     logn = np.log(np.array(counts, dtype=float))
-    return float(np.polyfit(logs, logn, 1)[0])
+    return -float(np.polyfit(logs, logn, 1)[0])  # N(s) ∝ s^-D，拟合斜率取负才是维数
 
 
 def tortuosity(skel):
