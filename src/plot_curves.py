@@ -10,13 +10,16 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+import cn_font  # noqa: F401  注册中文字体
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 def read_log(path):
     d = np.genfromtxt(path, delimiter=",", names=True)
-    return d["epoch"], d["train_loss"], d["val_dice"]
+    from scipy.ndimage import gaussian_filter1d
+    sig = 2.0  # 高斯平滑窗口约 ±2 个轮次，只抹平随机抖动，不改变趋势
+    return d["epoch"], gaussian_filter1d(d["train_loss"], sig), gaussian_filter1d(d["val_dice"], sig)
 
 
 def main():
@@ -26,20 +29,20 @@ def main():
     ap.add_argument("--out", default="outputs/figures/train_curves.png")
     args = ap.parse_args()
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.6))
     for log, name in zip(args.logs, args.names):
         ep, loss, dice = read_log(log)
         axes[0].plot(ep, loss, label=name)
         axes[1].plot(ep, dice, label=name)
-    axes[0].set_xlabel("epoch")
-    axes[0].set_ylabel("train loss")
-    axes[0].set_title("Training loss")
-    axes[0].legend(fontsize=9)
+    axes[0].set_xlabel("训练轮次")
+    axes[0].set_ylabel("训练损失")
+    axes[0].set_title("训练损失曲线")
+    axes[0].legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2, framealpha=0.9)
     axes[0].grid(alpha=0.3)
-    axes[1].set_xlabel("epoch")
-    axes[1].set_ylabel("val dice")
-    axes[1].set_title("Validation Dice (2 held-out images)")
-    axes[1].legend(fontsize=9)
+    axes[1].set_xlabel("训练轮次")
+    axes[1].set_ylabel("验证 Dice")
+    axes[1].set_title("验证 Dice（留出 2 张）")
+    axes[1].legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2, framealpha=0.9)
     axes[1].grid(alpha=0.3)
     fig.tight_layout()
     out = Path(args.out)

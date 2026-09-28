@@ -24,3 +24,5 @@ Thumbs.db
 
 # 远程运维脚本（含服务器凭据，勿提交）
 .remote/
+report_build/*.docx
+report_build/*.pdf

@@ -15,6 +15,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+import cn_font  # noqa: F401  注册中文字体
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -41,8 +42,11 @@ def main():
     for spec in args.sources:
         name, d = spec.split("=", 1)
         d = Path(d)
-        keys = sorted(p.stem.split("_")[0] for p in d.glob("*_pred.png")) or \
-            sorted(p.stem for p in d.glob("*.png"))
+        preds = sorted(d.glob("*_pred.png"))
+        if preds:  # 模型预测目录：去掉 _pred 后缀
+            keys = [p.stem[:-5] for p in preds]
+        else:      # 金标准目录：直接用文件名
+            keys = sorted(p.stem for p in d.glob("*.png"))
         for key in keys:
             mask_path = d / f"{key}_pred.png" if (d / f"{key}_pred.png").exists() else d / f"{key}.png"
             fov = load_gray(fov_dir / f"{key}.png") > 127
@@ -72,12 +76,13 @@ def main():
         sub = [r for r in rows if r["source"] == name]
         vals = {k: np.array([float(r[k]) for r in sub]) for k in FIELDS[2:]}
         agg[name] = vals
-        print(",".join([name] + [f"{v.mean():.4f}" for v in vals.values()]))
+        # 个别纯背景块的分形维数为 nan，用 nanmean 聚合
+        print(",".join([name] + [f"{np.nanmean(v):.4f}" for v in vals.values()]))
     with open(out / "morphology_mean.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(header)
         for name, vals in agg.items():
-            w.writerow([name] + [f"{v.mean():.4f}" for v in vals.values()])
+            w.writerow([name] + [f"{np.nanmean(v):.4f}" for v in vals.values()])
 
     plt.figure(figsize=(7, 4.2))
     bins = np.linspace(0, 16, 33)
@@ -85,9 +90,9 @@ def main():
         allw = np.concatenate(ws)
         plt.hist(np.clip(allw, bins[0], bins[-1]), bins=bins, density=True,
                  histtype="step", linewidth=1.8, label=f"{name} (n={len(allw)})")
-    plt.xlabel("vessel diameter (px)")
-    plt.ylabel("fraction of skeleton pixels")
-    plt.title("Vessel diameter distribution: GT vs models")
+    plt.xlabel("血管直径（像素）")
+    plt.ylabel("骨架像素占比")
+    plt.title("血管直径分布：金标准与模型对比")
     plt.legend()
     plt.tight_layout()
     plt.savefig(out / "diameter_dist.png", dpi=150)

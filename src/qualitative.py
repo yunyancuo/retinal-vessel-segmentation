@@ -11,6 +11,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+import cn_font  # noqa: F401  注册中文字体
 import matplotlib.pyplot as plt
 
 from dataset import load_gray
@@ -34,7 +35,7 @@ def main():
         img = load_gray(Path(args.data_root) / args.split / "images" / f"{key}.png")
         gt = load_gray(Path(args.data_root) / args.split / "masks" / f"{key}.png")
         row = [img, gt] + [load_gray(Path(p) / f"{key}_pred.png") for p in args.preds]
-        titles = ["enhanced image", "ground truth"] + list(args.names)
+        titles = ["增强图", "金标准"] + list(args.names)
         for ax, im, t in zip(axes[r], row, titles):
             ax.imshow(im, cmap="gray")
             ax.set_title(t, fontsize=10)

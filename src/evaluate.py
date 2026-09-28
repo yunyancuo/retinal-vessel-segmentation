@@ -93,8 +93,10 @@ def main():
 
     print(f"\n=== {args.split} 集结果（mean ± std, n={len(rows)}，阈值 {args.threshold}）===")
     for name in fields[1:]:
-        col = np.array([r[name] for r in rows])
-        print(f"{name:>12}: {col.mean():.4f} ± {col.std():.4f}")
+        col = np.array([r[name] for r in rows], dtype=float)
+        n_valid = int(np.isfinite(col).sum())
+        col = col[np.isfinite(col)]  # 个别块无血管像素算不了 AUC，跳过
+        print(f"{name:>12}: {col.mean():.4f} ± {col.std():.4f}  (n={n_valid})")
     print(f"\n逐图明细: {Path(args.save_dir) / 'eval_report.csv'}")
     print(f"预测与可视化: {save_dir}")
 

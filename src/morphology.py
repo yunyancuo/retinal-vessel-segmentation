@@ -12,6 +12,7 @@ import cv2
 import matplotlib
 
 matplotlib.use("Agg")
+import cn_font  # noqa: F401  注册中文字体
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.morphology import skeletonize
@@ -106,9 +107,9 @@ def main():
 
     plt.figure(figsize=(6, 4))
     plt.hist(res["widths"], bins=30, color="#c0504d", edgecolor="white")
-    plt.xlabel("vessel diameter (px)")
-    plt.ylabel("count")
-    plt.title("Vessel diameter distribution")
+    plt.xlabel("血管直径（像素）")
+    plt.ylabel("数量")
+    plt.title("血管直径分布")
     plt.tight_layout()
     plt.savefig(out / f"{stem}_diameter_hist.png", dpi=150)
 

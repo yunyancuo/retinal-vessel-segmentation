@@ -1,0 +1,4 @@
+source,vessel_density,mean_diameter_px,median_diameter_px,total_length_px,tortuosity,fractal_dimension
+金标准,0.0937,6.6651,6.1561,2658.1737,3.9212,1.3943
+基线U-Net,0.0918,6.9180,6.5132,2460.5512,3.3556,1.3756
+注意力U-Net,0.1019,7.2383,6.8250,2628.9113,3.5297,1.3944
