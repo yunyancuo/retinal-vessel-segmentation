@@ -1,12 +1,23 @@
-# python
+# Python 缓存与虚拟环境
 __pycache__/
 *.py[cod]
+*$py.class
 .venv/
 venv/
+*.egg-info/
+dist/
+build/
 
-# 数据与产物（体积大、可再生）
+# 测试与静态检查缓存
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 数据与训练产物（体积大、可再生）
 data/*
 !data/README.md
+data_src/
 outputs/
 runs/
 outputs_smoke/
@@ -16,13 +27,14 @@ outputs_smoke/
 *.pt
 *.onnx
 
-# IDE / 系统
+# IDE / 操作系统
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
 
-# 远程运维脚本（含服务器凭据，勿提交）
+# 远程运维脚本与中间构建产物（勿提交）
 .remote/
 report_build/*.docx
 report_build/*.pdf
+report_build/*.tmp.docx
